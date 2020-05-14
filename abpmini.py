@@ -106,11 +106,23 @@ def ADJACENT3(state,move):
 def HEURISTIC3(state):
     return (state**2)%23
 
+def MOVES4(state):
+    if state > 30: return []
+    return [1,2,3,4,5]
+
+def ADJACENT4(state,move):
+    return 5*state+move
+
+def HEURISTIC4(state,n=10):
+    if n == 0: return state % 99
+    return HEURISTIC4(((state+1)**3)%(state-1)**2,n-1)
+
 # Test cases for ABPMINIMAX
 def TESTABPMINIMAX():
+    print(ABPMINIMAX(0,MOVES4,ADJACENT4,HEURISTIC4,4))
     print(chr(10209)+" Test Case 1:","PASSED" if ABPMINIMAX(0,MOVES1,ADJACENT1,HEURISTIC1,4) == 1 else "FAILED")
     print(chr(10209)+" Test Case 2:","PASSED" if ABPMINIMAX(0,MOVES2,ADJACENT2,HEURISTIC2,6) == 2 else "FAILED")
     print(chr(10209)+" Test Case 3:","PASSED" if ABPMINIMAX(0,MOVES3,ADJACENT3,HEURISTIC3,7) == 7 else "FAILED")
-    return 42
+    # print(chr(10209)+" Test Case 4:","PASSED" if ABPMINIMAX(0,MOVES4,ADJACENT4,HEURISTIC4,4) == 1 else "FAILED")
 
 if __name__ == "__main__": TESTABPMINIMAX()
