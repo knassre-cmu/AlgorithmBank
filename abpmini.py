@@ -13,7 +13,7 @@ maxDepth: the maximum depth of the game tree that should be searched
 
 Outputs:
 
-best move: the best move that can be made from the start state
+move: the best move that can be made from the start state
 '''
 
 # Wrapper function for minimax + alpha-beta pruning. Performs top-level version.
