@@ -163,8 +163,8 @@ def INDEXBV(B,u,v,r,c):
 
 # Main funtion for SETBV. Returns a newbitvector with (r,c) flipped to k
 def SETBV(B,u,v,r,c,k):
-    if k == 0: return B & ~ (k << (v-c-1+v*(u-r))) # FIX DIS
-    if k == 1: B | (k << (v-c-1+v*(u-r)))
+    if k == 0: return B & ~ (1 << (v-c-1+v*(u-r-1)))
+    if k == 1: return B | (1 << (v-c-1+v*(u-r-1)))
 
 
 # Test cases for INDEXBV and SETBV
@@ -180,21 +180,10 @@ def TESTINDEXSETBV():
     print(chr(10209)+" Test Case 4:","PASSED" if INDEXBV(B4,4,3,3,2) == 0 else "FAILED")
     print()
     print("Testing Set Bitvector:")
-    r = 1
-    c = 2
-    for i in range(r):
-        for j in range(c):
-            print(INDEXBV(B1,r,c,i,j),end=" ")
-        print()
-    print("\/")
-    for i in range(r):
-        for j in range(c):
-            print(INDEXBV(SETBV(B1,r,c,0,0,0),r,c,i,j),end=" ")
-        print()
-    # print(chr(10209)+" Test Case 1:","PASSED" if SETBV(B1,1,2,0,0,0) == 1 else "FAILED")
-    # print(chr(10209)+" Test Case 2:","PASSED" if SETBV(B2,3,2,1,1,1) == 0 else "FAILED")
-    # print(chr(10209)+" Test Case 3:","PASSED" if SETBV(B3,3,3,2,0,0) == 1 else "FAILED")
-    # print(chr(10209)+" Test Case 4:","PASSED" if SETBV(B4,4,3,3,2,1) == 0 else "FAILED")
+    print(chr(10209)+" Test Case 1:","PASSED" if SETBV(B1,1,2,0,0,0) == 0 else "FAILED")
+    print(chr(10209)+" Test Case 2:","PASSED" if SETBV(B2,3,2,1,1,1) == 45 else "FAILED")
+    print(chr(10209)+" Test Case 3:","PASSED" if SETBV(B3,3,3,2,0,0) == 337 else "FAILED")
+    print(chr(10209)+" Test Case 4:","PASSED" if SETBV(B4,4,3,3,2,1) == 3055 else "FAILED")
     print()
 
 if __name__ == "__main__":
