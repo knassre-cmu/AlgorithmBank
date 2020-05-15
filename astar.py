@@ -36,7 +36,7 @@ def ASTARHELPER(graph,target,unvisited,distances,paths,neighbors,heuristic):
     unvisited.discard(node)
     if node == target: return paths[node]
     for neighbor in neighbors[node]:
-        weight = graph.edges[(node,neighbor)] + distances[node]
+        weight = graph.edges[node][neighbor] + distances[node]
         if weight < distances[neighbor]:
             distances[neighbor] = weight
             paths[neighbor] = paths[node] + [neighbor]

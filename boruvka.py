@@ -46,14 +46,14 @@ def BORUVKAHELPER(graph,mst,ufDict):
     trees = {FIND(n,ufDict) for n in ufDict}
     if len(trees) == 1: return
     cheapest = {t:None for t in trees}
-    for edge in graph.edges:
-        node1, node2 = edge
-        tree1, tree2 = FIND(node1,ufDict), FIND(node2,ufDict)
-        if tree1 != tree2:
-            if graph.edges[edge] < graph.edges.get(cheapest[tree1],float("inf")):
-                cheapest[tree1] = edge
-            if graph.edges[edge] < graph.edges.get(cheapest[tree2],float("inf")):
-                cheapest[tree2] = edge
+    for node1 in graph.edges:
+        for node2 in graph.edges[node1]:
+            tree1, tree2 = FIND(node1,ufDict), FIND(node2,ufDict)
+            if tree1 != tree2:
+                if graph.edges[node1][node2] < graph.edges.get(cheapest[tree1],float("inf")):
+                    cheapest[tree1] = (node1,node2)
+                if graph.edges[node1][node2] < graph.edges.get(cheapest[tree2],float("inf")):
+                    cheapest[tree2] = (node1,node2)
     for edge in list(cheapest.values()):
         if edge != None: 
             mst.add(edge)
@@ -95,9 +95,9 @@ def TESTBORUVKA():
     for i in range(len(E3)): G3.addEdge(E3[i][0],E3[i][1],len(E3)-i)
     for i in range(len(E4)): G4.addEdge(E4[i][0],E4[i][1],len(E4)-i)
     MST1 = {(1,3),(2,3)}
-    MST2 = {(1,2),(1,3),(3,4)}
-    MST3 = {(1,4),(1,5),(2,3),(2,6),(3,4)}
-    MST4 = {(2,6),(5,7),(1,4),(6,3),(1,7),(3,7)}
+    MST2 = {(4,2),(4,1),(4,3)}
+    MST3 = {(6,4),(6,3),(6,2),(5,1),(6,5)}
+    MST4 = {(7,3),(7,1),(7,6),(7,4),(7,5),(6,2)}
     print(chr(10209)+" Test Case 1:","PASSED" if ESEQ(BORUVKA(G1),MST1) else "FAILED")
     print(chr(10209)+" Test Case 2:","PASSED" if ESEQ(BORUVKA(G2),MST2) else "FAILED")
     print(chr(10209)+" Test Case 3:","PASSED" if ESEQ(BORUVKA(G3),MST3) else "FAILED")

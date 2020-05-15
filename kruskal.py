@@ -17,7 +17,11 @@ a spanning tree with the minimum weight.
 
 # Wrapper function for Kruskal's algorithm. Initializes the union find dict
 def KRUSKAL(graph):
-    edgeStack = sorted(graph.edges,key = lambda e: -graph.edges[e])
+    edgeStack = []
+    for node1 in graph.edges:
+        for node2 in graph.edges[node1]:
+            edgeStack.append((node1,node2))
+    edgeStack.sort(key = lambda e: -graph.edges[e[0]][e[1]])
     mst = set()
     KRUSKALHELPER(edgeStack,mst,{n:-1 for n in graph.nodes})
     return mst

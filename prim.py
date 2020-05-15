@@ -22,7 +22,7 @@ def PRIM(graph,seed):
     neighbors = graph.neighborDict()
     pq = PRIORITYQUEUE()
     for neighbor in neighbors[seed]:
-        pq.add((seed,neighbor),graph.edges[seed,neighbor])
+        pq.add((seed,neighbor),graph.edges[seed][neighbor])
     mst = set()
     PRIMHELPER(pq,mst,{seed},neighbors,graph)
     return mst
@@ -39,7 +39,7 @@ def PRIMHELPER(pq,mst,visited,neighborDict,graph):
         mst.add(edge)
         visited.add(node2)
         for neighbor in neighborDict[node2]:
-            pq.add((node2,neighbor),graph.edges[node2,neighbor])
+            pq.add((node2,neighbor),graph.edges[node2][neighbor])
     PRIMHELPER(pq,mst,visited,neighborDict,graph)
 
 # Checks if 2 sets of edges are equal

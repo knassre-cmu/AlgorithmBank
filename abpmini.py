@@ -119,6 +119,7 @@ def HEURISTIC4(state,n=10):
 
 # Test cases for ABPMINIMAX
 def TESTABPMINIMAX():
+    print("Testing Minimax + Alpha-Beta Pruning:")
     print(chr(10209)+" Test Case 1:","PASSED" if ABPMINIMAX(0,MOVES1,ADJACENT1,HEURISTIC1,4) == 1 else "FAILED")
     print(chr(10209)+" Test Case 2:","PASSED" if ABPMINIMAX(0,MOVES2,ADJACENT2,HEURISTIC2,6) == 2 else "FAILED")
     print(chr(10209)+" Test Case 3:","PASSED" if ABPMINIMAX(0,MOVES3,ADJACENT3,HEURISTIC3,7) == 7 else "FAILED")

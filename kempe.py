@@ -32,7 +32,7 @@ def GRAPHPOPPER(gprime):
             degrees[node] += 1
     while gprime.nodes != set():
         minNode = min(gprime.nodes, key = lambda n: degrees[n])
-        gprime.nodes.discard(minNode)
+        gprime.deleteNode(minNode)
         for neighbor in neighbors[minNode]:
             degrees[neighbor] -= 1
         stack.append(minNode)

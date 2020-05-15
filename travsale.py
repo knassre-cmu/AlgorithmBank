@@ -24,7 +24,7 @@ def TRAVSALE(graph,n):
 def TRAVLEN(path,graph):
     length = 0
     for i in range(len(path)-1):
-        length += graph.edges[(path[i],path[i+1])]
+        length += graph.edges[path[i]][path[i+1]]
     return length
 
 # Returns all orderings of the nodes that can be achieved from a single swap

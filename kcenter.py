@@ -32,7 +32,7 @@ def KCENTERSHELPER(graph,cSet,oSet,k):
     for node in oSet:
         minDist = float("inf")
         for center in cSet:
-            dist = graph.edges[(node,center)]
+            dist = graph.edges[node][center]
             if dist < minDist: minDist = dist
         if minDist > maxDist:
             maxNode = node
