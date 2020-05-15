@@ -31,6 +31,8 @@ Bank of functions, algorithms, classes, etc. I have created over the years that 
 > Kruskal's minimum spanning tree algorithm library using GRAPH class
 #### mathlib
 > Mathematical utilities library using fnutils
+#### matrix
+> MATRIX class for representing a mathematical matrix
 #### polysect
 > polygonal intersection library 
 #### pq
