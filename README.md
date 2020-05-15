@@ -1,8 +1,10 @@
 # AlgorithmBank
 Bank of functions, algorithms, classes, etc. I have created over the years that are worth keeping
 
-abpmini: Minimax with alpha-Beta pruning library
-astar: A* Pathfinding library using GRAPH class
+#### abpmini
+> Minimax with alpha-Beta pruning library
+#### astar
+> A* Pathfinding library using GRAPH class
 bfs: Breadth-First Search library using GRAPH class and QUEUE class
 bitlib: Bit manipulation library
 boruvka: Boruvka's minimum spanning tree algorithm library using GRAPH class
