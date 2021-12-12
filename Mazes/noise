@@ -1,0 +1,59 @@
+import math, random
+
+class Perlin(object):
+    # Takes in a list of octave scales and creates an object that takes in a
+    # certain (x, y) value and create the value of the perlin noise at that.
+    def __init__(self, octaves):
+        self.octaves = octaves
+        self.maxAmplitude = sum([amp for amp, _ in octaves])
+        self.vDicts = [{} for i in range(len(octaves))]
+
+    def __call__(self, x, y):
+        result = 0
+        for i in range(len(self.octaves)):
+            # Extract the current scale and vectorDict
+            amplitude, frequency = self.octaves[i]
+            vectorDict = self.vDicts[i]
+            # Calculate the x and y value when scaled by this octave
+            oX, oY = x * frequency, y * frequency
+
+            # Extract the bounding points of the tile containing the point
+            x0, y0 = int(oX), int(oY)
+            x1, y1 = x0 + 1, y0 + 1
+            dx = oX - x0
+            dy = oY - y0
+
+            # Calculate the various dot products and interpolate the results
+            n0 = self.dotGradient(x0, y0, oX, oY, vectorDict)
+            n1 = self.dotGradient(x1, y0, oX, oY, vectorDict)
+            ix0 = self.interpolate(n0, n1, dx)
+            n0 = self.dotGradient(x0, y1, oX, oY, vectorDict)
+            n1 = self.dotGradient(x1, y1, oX, oY, vectorDict)
+            ix1 = self.interpolate(n0, n1, dx)
+            value = self.interpolate(ix0, ix1, dy)
+            # Add the interpolated value to the result, scaling by amplitude
+
+            result += value * amplitude
+        # Return the result normalized by the sum of all the amplitudes
+        return result / self.maxAmplitude + 0.5
+
+    # A cubic interpolation function
+    def interpolate(self, a, b, w):
+        return (b - a) * (3 - w * 2) * w ** 2 + a
+
+    # Takes in a given (x, y) coordinate of a lattice point in a grid and returns
+    # a random unit vector, which is stored in the vectorDict for future use.
+    def getGradient(self, x, y, vectorDict):
+        if (x, y) not in vectorDict:
+            theta = random.random() * math.tau
+            gradient = (math.cos(theta), math.sin(theta))
+            vectorDict[(x, y)] = gradient
+        return vectorDict[(x, y)]
+
+    # Take the dot product of point of lattice point (x, y) to (x0, y0) and the
+    # vector from lattice point (x, y)
+    def dotGradient(self, x0, y0, x, y, vectorDict):
+        gradient = self.getGradient(x0, y0, vectorDict)
+        dx = x - x0
+        dy = y - y0
+        return dx * gradient[0] + dy * gradient[1]
