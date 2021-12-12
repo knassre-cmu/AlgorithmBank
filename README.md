@@ -6,24 +6,6 @@ Folder of the previous incarnate of the algorithm bank. This folder has a sepera
 
 ## Mazes
 An animation which demonstrates a large breadth of maze/terrain generation algorithms. Contents of the folder include:
-##### datastructures.py: a collection of classes that are useful for implementing various algorithms. Datastructures include:
-- Red Black Trees (implement a dictionary interface)
-- Priority Queues
-- Graphs, with the following Graph algorithms included:
-   - Extracting the set of all nodes connected to a node
-   - Extracting a list of all connected components
-   - Breadth First Search (BFS) pathfinding
-   - Dijkstra's Algorithm pathfinding
-   - A* Algorithm pathfinding
-   - Kruskal's Algorithm for creating a minimum spanning tree
-   - Edmond Karp #2 Algorithm for max flow
-- Polygons, with the following computational geometry algorithms included:
-   - Contianment of a point within a polygon
-   - Line side test
-   - Converting 2 points to standard form Ax + By = C
-   - Convex hull (via Graham Scan)
-   - Line intersection detection
-   - Polygon overlap detection
    
 ##### Graphics.py: a tkinter graphics framework based on subclassing an App class to create a handler then subclassing a Mode class and invoking instances of it which can be toggled between by the App class. MVC conventions are expected, but not enforced. Includes the following:
 - Methods that can be overwritten:
@@ -43,6 +25,27 @@ An animation which demonstrates a large breadth of maze/terrain generation algor
 - Other classes provided:
   - Button: a button class that takes in the (cx, cy, w, h) dimensions, text, body color, text color, and onclick function. Provides click, hover, and render methods.
   - ScrollBar: a scroll bar class that takes in the (x0, y0, x1, y1) bounding box as well as an alias to a variable that it will adjust to indicate the current scroll value. Provides click, release, scroll, and render methods.
+  
+##### datastructures.py: a collection of classes that are useful for implementing various algorithms. Datastructures include:
+- Red Black Trees (implement a dictionary interface)
+- Priority Queues
+- Graphs, with the following Graph algorithms included:
+   - Extracting the set of all nodes connected to a node
+   - Extracting a list of all connected components
+   - Breadth First Search (BFS) pathfinding
+   - Dijkstra's Algorithm pathfinding
+   - A* Algorithm pathfinding
+   - Kruskal's Algorithm for creating a minimum spanning tree
+   - Edmond Karp #2 Algorithm for max flow
+- Polygons, with the following computational geometry algorithms included:
+   - Contianment of a point within a polygon
+   - Line side test
+   - Converting 2 points to standard form Ax + By = C
+   - Convex hull (via Graham Scan)
+   - Line intersection detection
+   - Polygon overlap detection
+
+##### noise.py: implementation of Perlin noise
   
 ##### mazes.py: an animation created with Graphcis.py to highlight a plethora of maze/terrain generation algorithms, including:
 - Maze Algorithms
