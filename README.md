@@ -56,7 +56,7 @@ An animation which demonstrates a large breadth of maze/terrain generation algor
   - Hunt & Kill: uses the Hunt & Kill algorithm to create a maze
   - Islamic City: generates a maze by starting with no walls and a set of random nodes that must be reachable from one another, then adds all the remaining walls in random order unless they would prevent the key nodes from being reachable from one another (checked via floodfill). Air pockets are removed from the final grid via floodfill.
 - Terrain Algorithms
-  - Kruskal Miner: genereates a cave map by creating random circular rooms and then carving ragged tunnels between them using Kruskal's algorithm to determine which rooms to connect.
+  - PVK Miner: genereates a cave map by randomly placing seeds (like Voronoi noise), then having them grow outwards to create random room shapes (like Prim's algorithm), then carving fuzzy tunnels between the rooms (using Kruskal's algorithm to decide which rooms to connect), and finally turning all walls next to a passage into a passage in order to smooth out the map. 
   - Sine Waves: generates a cave map by creating a random collection of sinusodial functions and applying them to each cell. Air pockets are removed from the final grid via floodfill.
   - Cellular Automata: generates a cave map by applying several iterations of a cellular automata to a random grid. Air pockets are removed from the final grid via floodfill.
   - Voronoi Noise: generates a cave map by randomly placing seeds and determining every cell's value based on the distances to every seed (plus some random fuzz). Air pockets are removed from the final grid via floodfill.
