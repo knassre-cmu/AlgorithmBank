@@ -18,7 +18,7 @@ class MainMode(Mode):
             "Eller's Algorithm": (self.eller, 21, 21), # Must be odd dims
             "Hunt & Kill": (self.hunt, 21, 21),  # Must be odd dims
             "Islamic City": (self.islamic, 24, 24), # Can have any dims
-            "Kruskal Miner": (self.miner, 150, 150), # Can have any dims, ideally large
+            "PVK Miner": (self.pvkMiner, 150, 150), # Can have any dims, ideally large-ish
             "Sine Waves": (self.sine, 100, 100), # Can have any dims
             "Cellular Automata": (self.automata, 75, 75), # Ideally large dims
             "Voronoi Noise": (self.voronoi, 64, 64), # Can have any dims
@@ -343,22 +343,32 @@ class MainMode(Mode):
                     grid[row][col] = 0
         return grid
     
-    # Create random mine-like cave by creating random rooms and then carving
-    # tunnels between them with Kruskal's algorithm
-    def miner(self, rows, cols):
+    # Create random mine-like cave by creating randomly placed rooms (Voronoi
+    # seed style) that grow outwards with a version of Prim's algorithm, and 
+    # then carving tunnels between them with a version of Kruskal's algorithm
+    def pvkMiner(self, rows, cols):
 
         # Create the starting grid with all walls
         grid = [[0 for c in range(cols)] for r in range(rows)]
 
-        numBombs = int(2.5 * rows ** 0.5)
-        bombs = [(random.randint(0, rows-1), random.randint(0, cols-1), random.randint(3, int(rows ** 0.5)-1)) for i in range(numBombs)]
-        for r, c, blastRadius in bombs:
-            for row in range(rows):
-                for col in range(cols):
-                    d = ((r - row) ** 2 + (c - col) ** 2) ** 0.5
-                    if d <= blastRadius:
-                        grid[row][col] = 1
+        # Create the room centers in different parts of the cave
+        numBombs = int(3 * rows ** 0.5)
+        bombs = [(random.randint(1, rows-2), random.randint(1, cols-2)) for i in range(numBombs)]
+        for r, c in bombs:
+            grid[r][c] = 1
+            component = {(r, c)}
+            neighbors = [(r-1, c), (r+1, c), (r, c-1), (r, c+1)]
+            for i in range(random.randint((rows+cols)//4, (rows+cols))):
+                if neighbors == []: break
+                row, col = neighbors.pop(random.randint(0, len(neighbors)-1))
+                grid[row][col] = 1
+                component.add((row, col))
+                for nr, nc in [(row-1, col), (row+1, col), (row, col-1), (row, col+1)]:
+                    if 0 <= nr < rows and 0 <= nc < cols and grid[nr][nc] == 0:
+                        neighbors.append((nr, nc))
+                if neighbors == []: break
 
+        # Implement the Kruskal UFS datastructure and utilities
         ufs = {i: i for i in range(numBombs)}
         def find(node):
             if ufs[node] == node: return node
@@ -370,33 +380,55 @@ class MainMode(Mode):
                 ufs[nodeA] = nodeB
             else:
                 ufs[nodeB] = nodeA
-        
+
+        # Define a function that gets the edge weight of two rooms in the
+        # cave based on the distance between their centers (plus some fuzz)
         def edgeWeight(i, j):
             dr = bombs[i][0] - bombs[j][0]
             dc = bombs[i][1] - bombs[j][1]
             d = (dr ** 2 + dc ** 2) ** 0.5
             shift = 1 + (random.random() - 0.5) / 2
             return d * shift, d
+
+        # Create all the edges and loop over them in increasing order
         edges = [(*edgeWeight(i, j), i, j) for i in range(numBombs) for j in range(i+1, numBombs)]
         edges.sort()
         for _, d, i, j in edges:
-            r0, c0, b0 = bombs[i]
-            r1, c1, b1 = bombs[j]
+            r0, c0 = bombs[i]
+            r1, c1 = bombs[j]
+
+            # Skip if the 2 rooms are already connected in the UFS
             repA, repB = find(i), find(j)
-            if d < b0 + b1 - 2:
-                union(repA, repB)
-                continue
             if repA == repB and random.random(): continue
             union(repA, repB)
+
+            # Connect the two rooms by calculating the angle between them and
+            # repeatedly removing blocks along that path, with some fuzz
             theta = math.atan2(r1-r0, c1-c0)
-            for i in range(int(d)+b0+b1-3):
+            for i in range(int(d)+3):
                 r = int(r0 + i * math.sin(theta))
                 c = int(c0 + i * math.cos(theta))
-                neighbors = [(r, c), (r-1, c), (r+1, c), (r, c-1), (r, c+1)]
-                neighbors.pop(random.randint(1, 4))
-                for nr, nc in neighbors:
+                neighbors = [(0, 0), (-1, 0), (1, 0), (0, -1), (0, 1)]
+                dr, dc = neighbors.pop(random.randint(1, 4))
+                neighbors.append((-2*dr, -2*dc))
+                for dr, dc in neighbors:
+                    nr, nc = r+dr, c+dc
                     if 0 <= nr < rows and 0 <= nc < cols:
                         grid[nr][nc] = 1
+
+        # Find every wall that is adjacent to a passage and make all of those
+        # walls into passages to smoothing out the caves.
+            adjacent = []
+            for row in range(rows):
+                for col in range(cols):
+                    if grid[row][col] == 1: continue
+                    for nr, nc in [(row-1, col), (row+1, col), (row, col-1), (row, col+1)]:
+                        if 0 <= nr < rows and 0 <= nc < cols and grid[nr][nc] == 1:
+                            adjacent.append((row, col))
+                            break
+        for row, col in adjacent:
+            grid[row][col] = 1
+
         return grid
 
     # Use random sine waves to generate a cave-like grid
@@ -505,27 +537,29 @@ class MainMode(Mode):
         # Create the initially empty grid, a list of randomly placed seeds, and
         # a list that will store every value
         grid = [[0 for c in range(cols)] for r in range(rows)]
-        seeds = [(random.randint(0, rows-1), random.randint(0, cols-1)) for i in range((rows+cols)//2)]
+        seeds = [(random.randint(0, rows-1), random.randint(0, cols-1)) for i in range(rows)]
         values = []
+
+        # For each cell in the grid, define its value as the sum of the
+        # reciprocals of its distance from the 2 nearest seeds
+        proximity = 2
         for r in range(rows):
             for c in range(cols):
                 distances = []
                 for sr, sc in seeds:
                     distances.append(1 / ((r - sr) ** 2 + (c - sc) ** 2 + 1))
-                v = sum(distances) * (random.random() + 0.5)
+                distances.sort()
+                v = sum(distances[-proximity:]) #* (random.random() + 0.5)
                 values.append(v)
                 grid[r][c] = v
 
-        # Obtain the median of the values and partition each cell as 0 or 1 based
-        # on its position relative to the median
+        # Obtain the median of the values and partition each cell as 0 or 1
+        # based on its position relative to the median
         values.sort()
         median = values[len(values)//2]
         for r in range(rows):
             for c in range(cols):
-                grid[r][c] = 0 if grid[r][c] < median else 1
-
-        # Make a copy of the grid with neighbor-rounded values
-        grid = self.smoothGrid(rows, cols, grid)
+                grid[r][c] = 0 if grid[r][c] > median else 1
 
         # Find the set of all nodes reachable from a random non-wall cell, and
         # start from scratch if the cave is then to small
