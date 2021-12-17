@@ -71,6 +71,7 @@ An animation which demonstrates a large breadth of maze/terrain generation algor
   - Voronoi Noise: generates a cave map by randomly placing seeds and determining every cell's value based on the distances to every seed (plus some random fuzz). Air pockets are removed from the final grid via floodfill.
   - Diamond Square: generates a cave map via the Diamond-Square algorithm. Air pockets are removed from the final grid via floodfill.
   - Perlin Noise: genereates a map via Perlin noise.
+  - Simplex Noise: genereates a map via Simplex noise.
 - Other Games/Puzzles
   - Pacman: uses a modified DFS to create a Pacman grid with extra cycles and symmetry.
   - Pipes: uses DFS to create a twisted pipes layout and then randomly rotates each of the tiles.
