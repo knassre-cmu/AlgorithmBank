@@ -49,24 +49,35 @@ An animation which demonstrates a large breadth of maze/terrain generation algor
   
 ##### mazes.py: an animation created with Graphcis.py to highlight a plethora of maze/terrain generation algorithms, including:
 - Maze Algorithms
-  - Recursive Backtracking: uses Depth First Search (DFS) to create a maze
-  - Prim's Algorithm: uses Prim's MST algorithm to create a maze
-  - Kruskal's Algorithm: uses Kruskal's MST algorithm (from the Graph class) to create a maze
-  - Eller's Algorithm: uses Eller's maze generation algorithm to create a maze
-  - Hunt & Kill: uses the Hunt & Kill algorithm to create a maze
-  - Islamic City: generates a maze by starting with no walls and a set of random nodes that must be reachable from one another, then adds all the remaining walls in random order unless they would prevent the key nodes from being reachable from one another (checked via floodfill). Air pockets are removed from the final grid via floodfill.
+  - Recursive Backtracking: uses Depth First Search (DFS) to create a maze.
+  - Prim's Algorithm: uses Prim's MST algorithm to create a maze.
+  - Kruskal's Algorithm: uses Kruskal's MST algorithm (from the Graph class) to create a maze.
+  - Eller's Algorithm: uses Eller's maze generation algorithm to create a maze.
+  - Hunt & Kill: uses the Hunt & Kill algorithm to create a maze.
+  - Wilson's Algorithm: uses Wilson's algorithm to generate a maze (NOT IMPLEMENTED YET).
+  - Aldous-Broder Algorithm: uses the Aldous-Broder algorithm to generate a maze (NOT IMPLEMENTED YET).
+  - Binary Tree Algorithm: uses the binary tree algorithm to generate a maze (NOT IMPLEMENTED YET).
+  - Sidewinder Algorithm: uses the sidewinder algorithm to generate a maze (NOT IMPLEMENTED YET).
+  - Recursive Division Algorithm: uses the recursive division algorithm to generate a maze.
+  - Blob Division Algorithm: uses the blob-based version of the recursive division algorithm to generate a maze.
+  - Weave DFS: uses a modified DFS to generate a maze where passages can also be carved under existing passages, creating weaves.
+  - Weave Kruskal: uses special preprocessing before using Kruskal's algorithm for maze generation to generate a woven maze with many crossings.
+  - Islamic City: generates a maze by starting with no walls and a set of nodes that must be reachable from one another, then adds all the remaining walls in random order unless they would prevent the key nodes from being reachable from one another (checked via floodfill). Air pockets are removed from the final grid via floodfill.
+  - Balloon Tunnel: a homegrown algorithm that generates a maze by randomly placing circles such that are tangent to each other and using DFS to fill in a maze within each circle. 
 - Terrain Algorithms
-  - PVK Miner: genereates a cave map by randomly placing seeds (like Voronoi noise), then having them grow outwards to create random room shapes (like Prim's algorithm), then carving fuzzy tunnels between the rooms (using Kruskal's algorithm to decide which rooms to connect), and finally turning all walls next to a passage into a passage in order to smooth out the map. 
+  - PVK Miner: a homegrown algorithm that genereates a cave map by randomly placing seeds (like Voronoi noise), then having them grow outwards to create random room shapes (like Prim's algorithm), then carving fuzzy tunnels between the rooms (using Kruskal's algorithm to decide which rooms to connect), and finally turning all walls next to a passage into a passage in order to smooth out the map. 
   - Sine Waves: generates a cave map by creating a random collection of sinusodial functions and applying them to each cell. Air pockets are removed from the final grid via floodfill.
   - Cellular Automata: generates a cave map by applying several iterations of a cellular automata to a random grid. Air pockets are removed from the final grid via floodfill.
   - Voronoi Noise: generates a cave map by randomly placing seeds and determining every cell's value based on the distances to every seed (plus some random fuzz). Air pockets are removed from the final grid via floodfill.
   - Diamond Square: generates a cave map via the Diamond-Square algorithm. Air pockets are removed from the final grid via floodfill.
-  - Perlin Noise: genereates a map via Perlin noise
+  - Perlin Noise: genereates a map via Perlin noise.
 - Other Games/Puzzles
-  - Pacman: uses a modified DFS to create a Pacman grid with extra cycles and symmetry
-  - Killer Sudoku: uses several backtrackers to create a Killer Sudoku board with cage shapes using only 4 colors
-  - Sliding Tile: uses random walk to create a sliding tile puzzle
-  - Kami: uses Perlin noise to create a Kami puzzle
+  - Pacman: uses a modified DFS to create a Pacman grid with extra cycles and symmetry.
+  - Pipes: uses DFS to create a twisted pipes layout and then randomly rotates each of the tiles.
+  - Sudoku: uses recursie backtracking to create a Sudoku board.
+  - Killer Sudoku: uses several backtrackers to create a Killer Sudoku board with cage shapes using only 4 colors.
+  - Sliding Tile: uses random walk to create a sliding tile puzzle.
+  - Kami: randomly places shapes to create a Kami puzzle.
   
   
   
