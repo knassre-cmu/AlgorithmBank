@@ -1,5 +1,5 @@
 from Graphics import *
-from noise import Perlin
+from noise import Perlin, Simplex
 from datastructures import Graph
 import random, math, copy
 
@@ -35,6 +35,7 @@ class MainMode(Mode):
             "Voronoi Noise": (self.voronoi, 64, 64), # Can have any dims
             "Diamond Square": (self.diamondSquare, 129, 129), # Square power of 2 plus 1
             "Perlin Noise": (self.perlin, 125, 125), # Procedural generation :)
+            "Simplex Noise": (self.simplex, 125, 125), # Procedural generation :)
             "Pacman Grid": (self.pacrat, 31, 31), # Must have multiple of 4 - 1 dims
             "Twisted Pipes": (self.pipes, 7, 7), # Can have any dims
             "Regular Sudoku": (self.sudoku, 9, 9), # Perfect square, ideally small-ish
@@ -1052,9 +1053,14 @@ class MainMode(Mode):
 
     # Use perlin noise to generate a cave-like grid
     def perlin(self, rows, cols):
-        # p = Perlin([(1, 0.1)])
         p = Perlin([(1, 0.5), (2, 0.25), (3, 0.1)])
         grid = [[1 if p(r/3, c/3) > 0.5 else 0 for c in range(cols)] for r in range(rows)]
+        return grid
+
+    # Use simplex noise to generate a cave-like grid
+    def simplex(self, rows, cols):
+        s = Simplex([(1, 0.5), (2, 0.25), (4, 0.1)])
+        grid = [[1 if s(r/3, c/3) > 0.5 else 0 for c in range(cols)] for r in range(rows)]
         return grid
 
     # Use a modified DFS to create a pacman-like grid
