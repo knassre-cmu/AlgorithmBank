@@ -54,10 +54,10 @@ An animation which demonstrates a large breadth of maze/terrain generation algor
   - Kruskal's Algorithm: uses Kruskal's MST algorithm (from the Graph class) to create a maze.
   - Eller's Algorithm: uses Eller's maze generation algorithm to create a maze.
   - Hunt & Kill: uses the Hunt & Kill algorithm to create a maze.
-  - Wilson's Algorithm: uses Wilson's algorithm to generate a maze (NOT IMPLEMENTED YET).
-  - Aldous-Broder Algorithm: uses the Aldous-Broder algorithm to generate a maze (NOT IMPLEMENTED YET).
-  - Binary Tree Algorithm: uses the binary tree algorithm to generate a maze (NOT IMPLEMENTED YET).
-  - Sidewinder Algorithm: uses the sidewinder algorithm to generate a maze (NOT IMPLEMENTED YET).
+  - Wilson's Algorithm: uses Wilson's algorithm to generate a maze.
+  - Aldous-Broder Algorithm: uses the Aldous-Broder algorithm to generate a maze.
+  - Binary Tree Algorithm: uses the binary tree algorithm to generate a maze.
+  - Sidewinder Algorithm: uses the sidewinder algorithm to generate a maze.
   - Recursive Division Algorithm: uses the recursive division algorithm to generate a maze.
   - Blob Division Algorithm: uses the blob-based version of the recursive division algorithm to generate a maze.
   - Weave DFS: uses a modified DFS to generate a maze where passages can also be carved under existing passages, creating weaves.
@@ -77,7 +77,7 @@ An animation which demonstrates a large breadth of maze/terrain generation algor
   - Sudoku: uses recursie backtracking to create a Sudoku board.
   - Killer Sudoku: uses several backtrackers to create a Killer Sudoku board with cage shapes using only 4 colors.
   - Sliding Tile: uses random walk to create a sliding tile puzzle.
-  - Kami: randomly places shapes to create a Kami puzzle.
+  - Kami: uses a version of the blob-based recursive division algorithm, along with graph coloring, to create a Kami puzzke.
   
   
   
