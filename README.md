@@ -45,9 +45,9 @@ An animation which demonstrates a large breadth of maze/terrain generation algor
    - Line intersection detection
    - Polygon overlap detection
 
-##### noise.py: implementation of Perlin noise
+##### noise.py: implementations of Perlin noise and Simplex noise
   
-##### mazes.py: an animation created with Graphcis.py to highlight a plethora of maze/terrain generation algorithms, including:
+##### mazes.py: an animation created with Graphcis.py to highlight a plethora of maze/terrain/puzzle generation algorithms, including:
 - Maze Algorithms
   - Recursive Backtracking: uses Depth First Search (DFS) to create a maze.
   - Prim's Algorithm: uses Prim's MST algorithm to create a maze.
