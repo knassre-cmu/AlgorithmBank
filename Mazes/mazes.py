@@ -11,21 +11,25 @@ class Mazes(App):
 class MainMode(Mode):
     def appStarted(self):
         self.gridSize = min(self.width, self.height) * 0.5
+        self.menuWidth = (self.width - self.gridSize) / 3.25
+        self.centerX = self.menuWidth + (self.width - self.menuWidth) / 2
         self.algorithms = {
-            "Recursive Backtracking": (self.dfs, 21, 21), # Must be odd dims
-            "Prim's Algorithm": (self.prim, 21, 21), # Must be odd dims
-            "Kruskal's Algorithm": (self.kruskal, 21, 21), # Must be odd dims
-            "Eller's Algorithm": (self.eller, 21, 21), # Must be odd dims
-            "Hunt & Kill": (self.huntKill, 21, 21),  # Must be odd dims
-            # TODO: Wilson's
-            # TODO: Aldous-Broder
-            # TODO: Binary Tree
-            # TODO: Sidewinder
-            "Recursive Division": (self.division, 21, 21), # Must be odd dims
+            "Recursive Backtracking": (self.dfs, 31, 31), # Must be odd dims
+            "Prim's Algorithm": (self.prim, 31, 31), # Must be odd dims
+            "Kruskal's Algorithm": (self.kruskal, 31, 31), # Must be odd dims
+            "Eller's Algorithm": (self.eller, 31, 31), # Must be odd dims
+            "Hunt & Kill": (self.huntKill, 31, 31), # Must be odd dims
+            "Wilson's Algorithm": (self.wilson, 31, 31), # Must be odd dims, ideally small-ish
+            "Aldous-Broder": (self.aldous, 31, 31), # Must be odd dims, ideally small-ish
+            "Binary Tree": (self.binary, 31, 31), # Must be odd dims
+            "Sidewinder": (self.side, 31, 31), # Must be odd dims
+            "Recursive Division": (self.division, 31, 31), # Must be odd dims
             "Blob Division": (self.blob, 51, 51), # Must be odd dims, ideally medium-large-ish
-            "Islamic City": (self.islamic, 21, 21), # Must be odd dims
-            "PVK Miner": (self.pvkMiner, 125, 125), # Can have any dims, ideally large-ish
+            "Weave DFS": (self.weaveDFS, 15, 15), # Can have any dims
+            "Weave Kruskal": (self.weaveKruskal, 15, 15), # Can have any dims
+            "Islamic City": (self.islamic, 31, 31), # Must be odd dims
             "Balloon Tunnel": (self.balloon, 100, 100), # Can have any dims, ideally large-ish
+            "PVK Miner": (self.pvkMiner, 125, 125), # Can have any dims, ideally large-ish
             "Sine Waves": (self.sine, 75, 75), # Can have any dims, ideally medium-large-ish
             "Cellular Automata": (self.automata, 75, 75), # Ideally large dims
             "Voronoi Noise": (self.voronoi, 64, 64), # Can have any dims
@@ -33,24 +37,24 @@ class MainMode(Mode):
             "Perlin Noise": (self.perlin, 125, 125), # Procedural generation :)
             "Pacman Grid": (self.pacrat, 31, 31), # Must have multiple of 4 - 1 dims
             "Twisted Pipes": (self.pipes, 7, 7), # Can have any dims
-            "Weave DFS": (self.weaveDFS, 13, 13), # Can have any dims
-            "Weave Kruskal": (self.weaveKruskal, 13, 13), # Can have any dims
             "Regular Sudoku": (self.sudoku, 9, 9), # Perfect square, ideally small-ish
             "Killer Sudoku": (self.killer, 9, 9), # Square, ideally small-ish
             "Word Search": (self.wordSearch, 13, 13), # Size depends on word set used
             "Sliding Tile": (self.sliding, 5, 5), # Ideally small-ish
-            "Kami Puzzle": (self.kami, 40, 40), # Ideally medium-ish
+            "Kami Puzzle": (self.kami, 30, 30), # Ideally medium-small-ish
             }
         self.algorithmQueue = list(self.algorithms)
         self.currentAlgorithm = self.algorithmQueue[0]
         self.makeMaze()
         self.pipeWeaveAlgos = {"Twisted Pipes", "Weave DFS", "Weave Kruskal"}
         self.colorAlgos = {"Regular Sudoku", "Killer Sudoku", "Word Search", "Sliding Tile", "Kami Puzzle"}
+        self.pipesWithBorders = {"Twisted Pipes"}
+        self.colorWithoutBorders = {"Kami Puzzle"}
         self.isometric = False
         self.makeButtons()
 
     def makeButtons(self):
-        bw = (self.width - self.gridSize) / 3.25
+        bw = self.menuWidth
         bh = self.height / len(self.algorithmQueue)
         self.buttons = []
         for i in range(len(self.algorithmQueue)):
@@ -58,6 +62,8 @@ class MainMode(Mode):
             button = Button(bw/2, bh*(i+0.5), bw, bh, algo,
             "White", "Black", (lambda a: lambda: self.setAlgorithm(a))(algo))
             self.buttons.append(button)
+        for button in self.buttons:
+            button.hover(bw/2, bh/2)
 
     def setAlgorithm(self, algorithm):
         self.currentAlgorithm = algorithm
@@ -315,7 +321,142 @@ class MainMode(Mode):
             r0, c0, r1, c1 = hunt()
         return grid
 
-    # Uses the recursive-division aproach for maze generation
+    def wilson(self, rows, cols):
+        # Create the initially empty grid and the vector grid
+        grid = [[0 for c in range(cols)] for r in range(rows)]
+        vect = [[(0, 0) for c in range(cols)] for r in range(rows)]
+
+        # Start with a random seed that is already a passage
+        sr, sc = 2*random.randint(0, rows//2), 2*random.randint(0, cols//2)
+        grid[sr][sc] = 1
+
+        visited = {(sr, sc)}
+        target = (rows//2 + 1) * (cols//2 + 1)
+
+
+
+        while True:
+            empty = [(r, c) for r in range(0, rows, 2) 
+                                           for c in range(0, cols, 2)
+                                           if grid[r][c] == 0]
+            if len(empty) == 0: break
+            sr, sc = random.choice(empty)
+            r, c = sr, sc
+            while grid[r][c] != 1:
+                dirs = [(dr, dc) for dr, dc in [(0, -2), (0, 2), (-2, 0), (2, 0)]
+                                 if 0 <= r+dr < rows and 0 <= c+dc < cols]
+                dr, dc = random.choice(dirs)
+                vect[r][c] = (dr, dc)
+                r, c = r+dr, c+dc
+
+            r, c = sr, sc
+            while grid[r][c] != 1:
+                dr, dc = vect[r][c]
+                visited.add((r, c))
+                grid[r][c] = 1
+                grid[r+dr//2][c+dc//2] = 1
+                r, c = r +dr, c+dc
+
+        return grid
+    
+    # Uses the Aldous-Broder algorithm for maze generation
+    def aldous(self, rows, cols):
+        # Create the initially empty grid
+        grid = [[0 for c in range(cols)] for r in range(rows)]
+
+        # Does a stack-based random walk until the number of nodes visited
+        # reached the target number (meaning every node has been hit)
+        visited = set()
+        target = (rows//2 + 1) * (cols//2 + 1)
+        
+        # Start the random walk from a random seed node
+        r, c = 2*random.randint(0, rows//2), 2*random.randint(0, cols//2)
+        while True:
+            grid[r][c] = 1
+            visited.add((r, c))
+            if len(visited) == target: break
+
+            # Choose one of the valid neighbors to continue the walk from,
+            # carving a path to it if its also unvisited
+            neighbors = [(r+dr, c+dc) for dr, dc in [(0, -2), (0, 2), (-2, 0), (2, 0)]
+                                      if 0 <= r+dr < rows and 0 <= c+dc < cols]
+            nr, nc = random.choice(neighbors)
+            if (nr, nc) not in visited:
+                grid[(r+nr)//2][(c+nc)//2] = 1
+            r, c = nr, nc
+
+        return grid
+
+    # Uses the binary-tree algorithm for maze generation
+    def binary(self, rows, cols):
+        # Create the initially empty grid
+        grid = [[0 for c in range(cols)] for r in range(rows)]
+
+        # For every other cell, carve a passageway either up or left
+        for r in range(0, rows, 2):
+            for c in range(0, cols, 2):
+                grid[r][c] = 1
+                if (r == 0) and (c == 0): continue
+                elif (r == 0) and (c > 0): grid[r][c-1] = 1
+                elif (r > 0) and (c == 0): grid[r-1][c] = 1
+                else:
+                    if random.choice([True, False]):
+                        grid[r][c-1] = 1
+                    else:
+                        grid[r-1][c] = 1
+
+        return grid
+
+    # Uses the sidewinder algorithm for maze generation
+    def side(self, rows, cols):
+        # Create the initially empty grid
+        grid = [[0 for c in range(cols)] for r in range(rows)]
+
+        # Carve out the entire top row
+        for c in range(cols):
+            grid[0][c] = 1
+
+        # Carve every other cell
+        for r in range(0, rows, 2):
+            for c in range(0, cols, 2):
+                grid[r][c] = 1
+
+        # Repeat the carving sequences for each of the remaining rows
+        for r in range(2, rows, 2):
+
+            # Initialize the frequency, current column, and current row set
+            freq = random.randint(2, int(rows ** 0.5) + 1)
+            curCol = 0
+            curRowSet = [0]
+            while True:
+
+                # If at the end, or with chance 1/4, end the current run and
+                # carve upwards
+                if curCol == cols-1 or random.random() < 1 / freq:
+
+                    # Choose a random cell from the current row set to carve
+                    # upwards from
+                    c = random.choice(curRowSet)
+                    grid[r-1][c] = 1
+
+                    # If at the end of the row, end the current sequence
+                    if curCol == cols-1: break
+
+                    # Otherwise, re-randomize the frequency, increment the
+                    # current column, and reset the current row set
+                    freq = random.randint(2, int(rows ** 0.5) + 1)
+                    curCol += 2
+                    curRowSet = [curCol]
+
+                # Otherwise, if not at the end, carve right (if possible)
+                elif curCol < cols-1:
+                    grid[r][curCol+1] = 1
+                    curCol += 2
+                    curRowSet.append(curCol)
+
+        return grid
+
+    # Uses the recursive-division algorithm for maze generation
     def division(self, rows, cols):
 
         # Creates the graph that represents every other cell in the maze
@@ -338,12 +479,13 @@ class MainMode(Mode):
                     for c2 in range(c0, c1+1, 2):
                         for r3, c3 in [(r2-2, c2), (r2+2, c2), (r2, c2-2), (r2, c2+2)]:
                             if r0 <= r3 <= r1 and c0 <= c3 <= c1:
-                                # print((r2, c2), (r3, c3))
                                 G.addEdge((r2, c2), (r3, c3), 1)
                 continue
 
-            # Randomly choose whether to divide horizontally or vertically
-            divisionType = random.choice("HV")
+            # Randomly choose whether to divide horizontally or vertically,
+            # with the probability biased depending on the range dims
+            s = "HV" + ("V" if (r1 - r0) >= (c1 - c0) else "H")
+            divisionType = random.choice(s)
             if divisionType == "H":
 
                 # If horizontal, choose a bunch of columns to split the range
@@ -910,7 +1052,8 @@ class MainMode(Mode):
 
     # Use perlin noise to generate a cave-like grid
     def perlin(self, rows, cols):
-        p = Perlin([(1, 0.3), (2, 0.25), (3, 0.2)])
+        # p = Perlin([(1, 0.1)])
+        p = Perlin([(1, 0.5), (2, 0.25), (3, 0.1)])
         grid = [[1 if p(r/3, c/3) > 0.5 else 0 for c in range(cols)] for r in range(rows)]
         return grid
 
@@ -1442,11 +1585,11 @@ class MainMode(Mode):
             for c in range(cols):
                 if (r, c) == (r0, c0):
                     color = "#222222"
-                    value = ""
+                    value = None
                 else:
                     color = ["#BABFA8", "#D93232"][(r+c)%2]
                     value = r*cols + c + 1
-                grid[r][c] = (color, value)
+                grid[r][c] = [color, value]
 
         # Maintain a set of all nodes that have been swapped at least once,
         # and continue swapping until the entire grid of all nodes have been
@@ -1467,35 +1610,124 @@ class MainMode(Mode):
             r0, c0 = r1, c1
         return grid
 
-    # Use random shapes to generate a Kami puzzle
+    # Uses a modified version of the blob-based recursive division algorithm,
+    # and the graph coloring backtracker, to generate a Kami puzzle
     def kami(self, rows, cols):
-        colors = ["#D93240", "#2B2D2A", "#0FA67B", "#D9C0A3"] * 2
-        grid = [[[colors[0], ""] for c in range(cols)] for r in range(rows)]
 
-        # Create the random circles, then sort them so that the largest ones
-        # are placed first and the smallest ones are placed last
-        minR, maxR = (rows + cols) // 20, (rows + cols) // 4
-        numCircles = 5 * int(rows ** 0.5)
-        circles = [(random.randint(0, rows-1), random.randint(0, cols-1), random.randint(minR, maxR)) for i in range(numCircles)]
-        circles.sort(key=lambda c: -c[2])
+        # The recursive procedure that divides a set of nodes into two parts
+        components = {}
+        nextComponent = ["A"]
+        def divide(S):
 
-        # Fill in each of those circles with color
-        i = 0
-        for r0, c0, rad in circles:
-            color = colors[i % len(colors)]
-            for r in range(rows):
-                for c in range(cols):
-                    d = ((r - r0) ** 2 + (c - c0) ** 2) ** 0.5
-                    if d < rad:
-                        grid[r][c][0] = color
-            i += 1
+            # Stop dividing randomly, where the probability depends on the size
+            # of the number of elements in S
+            x = 9 * abs(len(S) / (rows * cols) - 0.01) ** 0.5
+            if x == 0 or random.random() < 1 / x - 0.2:
+                components[nextComponent[0]] = S
+                nextComponent[0] = chr(ord(nextComponent[0]) + 1)
+                return
 
+            # Pick two random seed nodes
+            a, b = random.sample(S, k=2)
+            A = {a}
+            B = {b}
+            C = {a, b}
+
+            # Partition the nodes in the set into two components using a Prim's
+            # algorithm-esque growth from the two seeds
+            while len(C) < len(S):
+                r0, c0 = random.sample(C, k=1)[0]
+                for r1, c1 in [(r0-1, c0), (r0+1, c0), (r0, c0-1), (r0, c0+1)]:
+                    if (r1, c1) not in S or (r1, c1) in C: continue
+                    if (r0, c0) in A: A.add((r1, c1))
+                    else: B.add((r1, c1))
+                    C.add((r1, c1))
+
+            # Try again if the division was too imbalanced
+            if not (0.1 <= len(A) / len(B) <= 10):
+                divide(S)
+                return
+
+            # Divide each side of the split further
+            divide(A)
+            divide(B)
+
+        # Run the recursive procedure starting with the set of all nodes
+        S = {(r, c) for r in range(rows) for c in range(cols)}
+        divide(S)
+
+        # Create a graph where each component is a node and the edges are
+        # between neighboring components
+        G = Graph()
+        for comp in components:
+            G.addNode(comp)
+
+            # Loop over each potentially neighboring component
+            for other in components:
+                if other == comp: continue
+                foundNeighbor = False
+                otherSet = components[other]
+
+                # If any of the nodes of the current component have a neighbor
+                # in the other component's set, add an edge between them
+                for r, c in components[comp]:
+                    for neighbor in [(r-1, c), (r+1, c), (r, c-1), (r, c+1)]:
+                        if neighbor in otherSet:
+                            foundNeighbor = True
+                            break
+                    if foundNeighbor: break
+                if foundNeighbor:
+                    G.addEdge(comp, other, 1)
+
+
+
+        # Create the initially empty grid, the 4 colors used to color the grid, 
+        # and a dictionary that will map each component to a color
+        colors = ["#D93240", "#2B2D2A", "#0FA67B", "#D9C0A3"]
+        grid = [[[colors[0], None] for c in range(cols)] for r in range(rows)]
+        compColors = {comp: None for comp in components}
+
+        # A backtracker to obtain a 4-coloring of the graph
+        def graphColor(component):
+            # Halt if every component has been colored, otherwise loop over
+            # all 4 colors in random order
+            if component not in components: return True
+            random.shuffle(colors)
+            for color in colors:
+
+                # Skip this color if any of the neighboring components already
+                # has this color
+                allClear = True
+                for neighbor in G.getNeighbors(component):
+                    if compColors[neighbor] == color:
+                        allClear = False
+                        break
+                if not allClear: continue
+
+                # Otherwise, color the node, make a recursive call, return
+                # if it succeeds otherwise unmake the move
+                compColors[component] = color
+                if graphColor(chr(ord(component)+1)): return True
+                compColors[component] = None
+
+            # If all 4 colors failed, backtrack
+            return False
+
+        # Start the backtracker from the first component
+        graphColor("A")
+
+        # Color in each cell based on its component's color
+        for comp in components:
+            for r, c in components[comp]:
+                grid[r][c][0] = compColors[comp]
+                
         return grid
 
     def mousePressed(self, event):
-        for button in self.buttons:
-            button.hover(event.x, event.y)
-            button.click(event.x, event.y)
+        if event.x <= self.menuWidth:
+            for button in self.buttons:
+                button.hover(event.x, event.y)
+                button.click(event.x, event.y)
 
     def keyPressed(self, event):
         if event.key == "Space":
@@ -1506,13 +1738,13 @@ class MainMode(Mode):
     def getCellBounds(self, row, col, offset=False):
         cw = (self.gridSize / self.cols)
         ch = (self.gridSize / self.rows)
-        x0 = (0 if offset else (self.width - self.gridSize)/2) + cw * col
+        x0 = (0 if offset else self.centerX - self.gridSize/2) + cw * col
         y0 = (0 if offset else (self.height - self.gridSize)/2) + ch * row
         x1 = x0 + cw
         y1 = y0 + ch
         return x0, y0, x1, y1
 
-    def renderPipeCell(self, canvas, row, col, border=True):
+    def renderPipeCell(self, canvas, row, col):
         x0, y0, x1, y1 = self.getCellBounds(row, col)
         dx = (x1 - x0) / 3
         dy = (y1 - y0) / 3
@@ -1526,12 +1758,12 @@ class MainMode(Mode):
             canvas.create_rectangle(x0, y0+dy, x1-dx, y1-dy, fill="White", width=0)
         if "R" in self.maze[row][col]:
             canvas.create_rectangle(x0+dx, y0+dy, x1, y1-dy, fill="White", width=0)
-        if border:
+        if self.currentAlgorithm in self.pipesWithBorders:
             canvas.create_rectangle(x0, y0, x1, y1, width=1)
 
     def renderWeaveCell(self, canvas, row, col):
         if "LR" not in self.maze[row][col] and "UD" not in self.maze[row][col]:
-            self.renderPipeCell(canvas, row, col, False)
+            self.renderPipeCell(canvas, row, col)
             return
         x0, y0, x1, y1 = self.getCellBounds(row, col)
         dx = (x1 - x0) / 3
@@ -1549,16 +1781,17 @@ class MainMode(Mode):
     def renderColorCell(self, canvas, row, col):
         x0, y0, x1, y1 = self.getCellBounds(row, col)
         color, text = self.maze[row][col]
-        canvas.create_rectangle(x0, y0, x1, y1, fill=color)
+        w = 0 if self.currentAlgorithm in self.colorWithoutBorders else 1
+        canvas.create_rectangle(x0, y0, x1, y1, fill=color, width=w)
         if text != None:
             canvas.create_text((x0+x1)/2, (y0+y1)/2, text=text)
 
     def toIsometric(self, x, y, z=0):
-        thetaX = math.radians(210)
-        thetaY = math.radians(330)
+        thetaX = math.radians(213)
+        thetaY = math.radians(327)
         xi = x * math.cos(thetaX) + y * math.cos(thetaY)
         yi = x * math.sin(thetaX) + y * math.sin(thetaY)
-        return self.width/2 + xi, self.height*0.25-yi
+        return self.centerX + xi, self.height*0.25 - yi
 
     def renderIsometricCell(self, canvas, row, col, h, topColor, leftColor, rightColor):
         x0, y0, x1, y1 = self.getCellBounds(row, col, True)
@@ -1589,7 +1822,7 @@ class MainMode(Mode):
                     canvas.create_rectangle(x0, y0, x1, y1, width=0, fill=color)
 
     def renderMazeName(self, canvas):
-        x = self.width*0.5
+        x = self.centerX
         y = self.height*0.9
         canvas.create_text(x, y, text=self.currentAlgorithm, font="Futura 16 bold")
 
